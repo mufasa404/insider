@@ -6,6 +6,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
+from io import StringIO
 
 # --- KONFIGURATION ---
 URL = "https://www.dataroma.com/m/ins/ins.php"
@@ -91,7 +92,8 @@ def get_dataroma_data():
     try:
         # Timeout hinzugefügt, damit der Server nicht hängt
         response = requests.get(URL, headers=headers, timeout=20)
-        tables = pd.read_html(response.text, match="Filing")
+        html_data = StringIO(response.text)
+        tables = pd.read_html(html_data, match="Filing")
         if not tables:
             return None
         df = tables[0]
